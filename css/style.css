@@ -1,0 +1,33 @@
+:root { --bg:#fff; --fg:#1b1f24; --muted:#6b7280; --line:#e5e7eb; --accent:#e4572e; --panel:#f8f9fb; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#14171c; --fg:#e8eaed; --muted:#9aa0a6; --line:#2a2f37; --panel:#1b1f26; }
+}
+* { box-sizing: border-box; }
+html, body { height:100%; margin:0; font:14px/1.45 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+body { display:flex; }
+#panel { width:320px; max-width:100%; padding:16px; overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); }
+#map { flex:1; min-width:0; }
+h1 { font-size:18px; margin:0 0 4px; }
+.hint { color:var(--muted); margin:0 0 12px; font-size:12px; }
+#drop { display:flex; flex-direction:column; gap:2px; align-items:center; padding:20px 12px; border:2px dashed var(--line); border-radius:10px; text-align:center; cursor:pointer; }
+#drop span { color:var(--muted); font-size:12px; }
+#drop.over { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, transparent); }
+#stats { margin:12px 0 4px; color:var(--muted); font-size:12px; }
+#file-list { list-style:none; margin:0 0 12px; padding:0; max-height:160px; overflow-y:auto; }
+#file-list li { display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom:1px solid var(--line); }
+#file-list li span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#file-list button { border:0; background:none; color:var(--muted); cursor:pointer; font-size:16px; line-height:1; }
+details { margin:10px 0; }
+summary { cursor:pointer; font-weight:600; margin-bottom:6px; }
+label { display:grid; grid-template-columns:1fr auto; gap:2px 8px; margin:8px 0; font-size:13px; }
+label input[type=range] { grid-column:1 / -1; width:100%; accent-color:var(--accent); }
+label.check { display:flex; gap:6px; align-items:center; }
+select { width:100%; padding:6px; background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:6px; }
+.row { display:flex; gap:8px; }
+button#fit, button#clear { flex:1; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); cursor:pointer; }
+button#fit:hover, button#clear:hover { border-color:var(--accent); }
+@media (max-width:700px) {
+  body { flex-direction:column-reverse; }
+  #panel { width:100%; max-height:45vh; border-right:0; border-top:1px solid var(--line); }
+  #map { min-height:55vh; }
+}
