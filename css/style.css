@@ -40,3 +40,34 @@ body.drag::after { content:"Suelta aquí tus GPX"; position:absolute; inset:0; d
 #attr { position:absolute; right:6px; bottom:4px; font-size:11px; color:#ccc; background:rgba(0,0,0,.5);
   padding:1px 5px; border-radius:4px; display:none; }
 @media (max-width:700px) { #panel { width:calc(100% - 44px); max-height:50%; } }
+
+/* filtros */
+#panel .two { display:flex; gap:8px; }
+#panel .two label { flex:1; min-width:0; }
+#panel input[type=date] { width:100%; box-sizing:border-box; background:#1a2030; color:#e8eaf0; border:1px solid #2a3040; border-radius:6px; padding:3px; color-scheme:dark; }
+
+/* leyenda de velocidad */
+#legend { position:absolute; left:10px; bottom:10px; width:200px; background:rgba(15,18,26,.88); border:1px solid #2a3040; border-radius:8px; padding:6px 8px; font-size:11px; color:#c7cde0; }
+#lg-bar { height:8px; border-radius:4px; }
+.lg-labels { display:flex; justify-content:space-between; margin-top:3px; }
+
+/* panel de estadísticas */
+#sp { position:absolute; top:10px; right:10px; width:320px; max-width:calc(100% - 20px); max-height:calc(100% - 20px); overflow-y:auto;
+  background:rgba(15,18,26,.94); border:1px solid #2a3040; border-radius:10px; padding:10px 12px; font-size:13px; line-height:1.35; }
+.sp-head { display:flex; align-items:center; gap:8px; }
+.sp-head strong { flex:1; font-size:15px; }
+.sp-head select { background:#1a2030; color:#e8eaf0; border:1px solid #2a3040; border-radius:6px; padding:3px; }
+.sp-head button { background:none; border:0; color:#aab2c5; font-size:20px; cursor:pointer; line-height:1; }
+#sp h3 { font-size:13px; margin:14px 0 6px; color:#aab2c5; }
+#sp .kv { display:grid; grid-template-columns:1fr auto; gap:3px 12px; margin-top:8px; }
+#sp .k { color:#7f889d; } #sp .v { text-align:right; }
+#sp .chart { max-height:200px; overflow-y:auto; }
+.bar-row { display:grid; grid-template-columns:64px 1fr 48px; align-items:center; gap:6px; margin:2px 0; font-size:12px; }
+.bar-wrap { background:#1a2030; border-radius:3px; height:10px; }
+.bar { background:#e4572e; height:100%; border-radius:3px; }
+.bv { text-align:right; color:#c7cde0; }
+#sp ol.top { margin:0; padding-left:20px; }
+#sp button.link { background:none; border:0; color:#8fb4ff; cursor:pointer; padding:2px 0; text-align:left; font-size:13px; }
+#sp button.link:hover { text-decoration:underline; }
+#sp .muted { color:#7f889d; display:block; margin-top:8px; font-size:12px; }
+@media (max-width:700px) { #sp { top:auto; bottom:10px; max-height:55%; } }

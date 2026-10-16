@@ -3,22 +3,57 @@ import { buildRoute } from './routes.js';
 import { HeatLayer } from './heat.js';
 import { TileLayer, STYLES } from './tiles.js';
 import { percentile } from './geo.js';
+import { speedColor } from './colormap.js';
+import { renderStats } from './stats.js';
+import { saveSession, loadSession } from './session.js';
 
 const $ = (id) => document.getElementById(id);
 
 let W = 0, H = 0, dpr = 1, cx = 0.5, cy = 0.5, zoom = 2;
 let dirty = true, tdirty = true, useMap = true, sel = 'all', intTouched = false;
+let mode = 'density', domain = [0, 40];
 let routes = [];
 
 const heat = new HeatLayer($('heat'));
 const tiles = new TileLayer($('tiles'), () => { tdirty = true; });
 
-// ---------- helpers de vista ----------
+// ---------- helpers ----------
 const view = () => ({ W, H, dpr, cx, cy, zoom });
 const scale = () => 256 * Math.pow(2, zoom);
-const visible = () => routes.filter((r) => sel === 'all' || r.year === +sel);
 const cropD = () => ($('crop').checked ? +$('cropd').value : 0);
 const say = (t) => { $('msg').textContent = t || ''; };
+
+function visible() {
+  const from = $('dfrom').value, to = $('dto').value;
+  return routes.filter((r) =>
+    (sel === 'all' || r.year === +sel) &&
+    (!from || (r.date && r.date >= from)) &&
+    (!to || (r.date && r.date <= to)));
+}
+
+function updateDomain() {
+  if (mode !== 'speed') return;
+  const vals = [];
+  for (const r of visible()) for (const s of r.segs) {
+    if (!s.spd) continue;
+    const step = Math.max(1, Math.floor(s.n / 60));
+    for (let i = 0; i < s.n; i += step) if (Number.isFinite(s.spd[i])) vals.push(s.spd[i]);
+  }
+  if (vals.length) {
+    const lo = percentile(vals, 0.05);
+    domain = [lo, Math.max(percentile(vals, 0.95), lo + 5)];
+  } else domain = [0, 1];
+  say(vals.length ? '' : 'Ninguna ruta visible tiene marcas de tiempo; no se puede colorear por velocidad.');
+}
+
+function updateLegend() {
+  $('legend').hidden = mode !== 'speed';
+  if (mode !== 'speed') return;
+  const stops = [0, 0.25, 0.5, 0.75, 1].map((t) => `rgb(${speedColor(t).join(',')}) ${t * 100}%`);
+  $('lg-bar').style.background = `linear-gradient(90deg, ${stops.join(',')})`;
+  $('lg-lo').textContent = `${Math.round(domain[0])} km/h`;
+  $('lg-hi').textContent = `${Math.round(domain[1])} km/h`;
+}
 
 function stats() {
   const D = cropD();
@@ -32,12 +67,36 @@ function stats() {
     : 'Sin rutas cargadas';
 }
 
+function refreshStatsPanel() {
+  if ($('sp').hidden) return;
+  renderStats($('sp-body'), visible(), {
+    group: $('sp-group').value,
+    onRoute: (r) => fitBox(r.x0, r.x1, r.y0, r.y1, 0.15),
+    onZone: (x, y) => { cx = x; cy = y; zoom = Math.max(zoom, 14); dirty = tdirty = true; },
+  });
+}
+
+// Se llama cuando cambian filtros, modo o datos.
+function refresh() {
+  updateDomain(); updateLegend(); stats(); refreshStatsPanel(); dirty = true;
+}
+
 function resize() {
   W = window.innerWidth; H = window.innerHeight;
   dpr = Math.min(window.devicePixelRatio || 1, 2);
   while (W * H * dpr * dpr > 4.5e6 && dpr > 0.5) dpr -= 0.25;
   const w = Math.round(W * dpr), h = Math.round(H * dpr);
   heat.resize(w, h); tiles.resize(w, h);
+  dirty = tdirty = true;
+}
+
+function fitBox(x0, x1, y0, y1, pad = 0.06) {
+  const minSpan = 0.005 / 360;
+  x1 = Math.max(x1, x0 + minSpan); y1 = Math.max(y1, y0 + minSpan);
+  const px = (x1 - x0) * pad, py = (y1 - y0) * pad;
+  x0 -= px; x1 += px; y0 -= py; y1 += py;
+  zoom = Math.max(1, Math.min(18, Math.log2(Math.min(W / (256 * (x1 - x0)), H / (256 * (y1 - y0))))));
+  cx = (x0 + x1) / 2; cy = (y0 + y1) / 2;
   dirty = tdirty = true;
 }
 
@@ -48,21 +107,15 @@ function fit() {
     const step = Math.max(1, Math.floor(s.n / 200));
     for (let i = 0; i < s.n; i += step) { xs.push(s.xs[i]); ys.push(s.ys[i]); }
   }
-  const minSpan = 0.005 / 360, pad = 0.06;
-  let x0 = percentile(xs, 0.01), x1 = percentile(xs, 0.99), y0 = percentile(ys, 0.01), y1 = percentile(ys, 0.99);
-  x1 = Math.max(x1, x0 + minSpan); y1 = Math.max(y1, y0 + minSpan);
-  const px = (x1 - x0) * pad, py = (y1 - y0) * pad;
-  x0 -= px; x1 += px; y0 -= py; y1 += py;
-  zoom = Math.max(1, Math.min(18, Math.log2(Math.min(W / (256 * (x1 - x0)), H / (256 * (y1 - y0))))));
-  cx = (x0 + x1) / 2; cy = (y0 + y1) / 2;
-  dirty = tdirty = true;
+  fitBox(percentile(xs, 0.01), percentile(xs, 0.99), percentile(ys, 0.01), percentile(ys, 0.99));
+}
+
+function heatOpts() {
+  return { mode, intensity: +$('int').value, width: +$('wid').value, crop: cropD(), domain };
 }
 
 function loop() {
-  if (dirty) {
-    dirty = false;
-    heat.render(visible(), view(), { intensity: +$('int').value, width: +$('wid').value, crop: cropD() });
-  }
+  if (dirty) { dirty = false; heat.render(visible(), view(), heatOpts()); }
   if (tdirty) {
     tdirty = false;
     tiles.draw(view(), useMap);
@@ -135,7 +188,10 @@ $('customurl').oninput = (e) => {
 $('map').onchange = (e) => { useMap = e.target.checked; tdirty = true; $('pngmap').disabled = !useMap; };
 $('int').oninput = () => { intTouched = true; dirty = true; };
 $('wid').oninput = () => { dirty = true; };
-$('year').onchange = (e) => { sel = e.target.value; stats(); dirty = true; };
+$('year').onchange = (e) => { sel = e.target.value; refresh(); };
+$('dfrom').onchange = $('dto').onchange = refresh;
+$('dclear').onclick = () => { $('dfrom').value = ''; $('dto').value = ''; refresh(); };
+$('mode').onchange = (e) => { mode = e.target.value; say(''); refresh(); };
 $('crop').onchange = $('cropd').oninput = () => {
   const on = $('crop').checked;
   $('cropd').disabled = !on;
@@ -147,12 +203,17 @@ $('crop').onchange = $('cropd').oninput = () => {
 $('reset').onclick = fit;
 $('toggle').onclick = () => { const b = $('body'); b.hidden = !b.hidden; };
 $('clear').onclick = () => { routes = []; sel = 'all'; afterChange(); };
+$('stats-btn').onclick = () => { $('sp').hidden = !$('sp').hidden; refreshStatsPanel(); };
+$('sp-close').onclick = () => { $('sp').hidden = true; };
+$('sp-group').onchange = refreshStatsPanel;
 
 // ---------- carga de archivos (todo local) ----------
 $('pick').onclick = $('add').onclick = () => $('f-files').click();
 $('pickdir').onclick = $('adddir').onclick = () => $('f-dir').click();
+$('load-session').onclick = () => $('f-session').click();
 $('f-files').onchange = (e) => { addFiles([...e.target.files]); e.target.value = ''; };
 $('f-dir').onchange = (e) => { addFiles([...e.target.files]); e.target.value = ''; };
+$('f-session').onchange = (e) => { addFiles([...e.target.files]); e.target.value = ''; };
 
 let dragDepth = 0;
 window.addEventListener('dragenter', (e) => { e.preventDefault(); dragDepth++; document.body.classList.add('drag'); });
@@ -188,10 +249,19 @@ async function walk(entry, out) {
 
 async function addFiles(list) {
   const gpx = list.filter((f) => f.name.toLowerCase().endsWith('.gpx'));
-  if (!gpx.length) { say('No se encontró ningún archivo .gpx.'); return; }
+  const sessions = list.filter((f) => f.name.toLowerCase().endsWith('.gpxheat'));
+  if (!gpx.length && !sessions.length) { say('No se encontró ningún archivo .gpx ni .gpxheat.'); return; }
   const wasEmpty = !routes.length;
   const known = new Set(routes.map((r) => r.key));
   const errors = [];
+
+  for (const f of sessions) {
+    say(`Abriendo sesión ${f.name}…`);
+    try {
+      for (const r of await loadSession(f)) if (!known.has(r.key)) { routes.push(r); known.add(r.key); }
+    } catch (err) { errors.push(err.message || `${f.name}: sesión no válida`); }
+  }
+
   let i = 0;
   for (const f of gpx) {
     i++;
@@ -199,8 +269,8 @@ async function addFiles(list) {
     if (known.has(key)) continue;
     say(`Cargando ${i}/${gpx.length}…`);
     try {
-      const { segs, year } = parseGPX(await f.text(), f.name);
-      const route = buildRoute(f.name, key, segs, year);
+      const { segs, date } = parseGPX(await f.text(), f.name);
+      const route = buildRoute(f.name, key, segs, date);
       if (route) { routes.push(route); known.add(key); }
       else errors.push(`${f.name}: sin tracks utilizables`);
     } catch (err) { errors.push(err.message); }
@@ -214,7 +284,6 @@ async function addFiles(list) {
 function afterChange() {
   $('empty').hidden = routes.length > 0;
   $('nfiles').textContent = routes.length;
-  // lista de archivos
   const ul = $('file-list');
   ul.replaceChildren();
   routes.slice(0, 300).forEach((r) => {
@@ -226,16 +295,30 @@ function afterChange() {
     b.onclick = () => { routes = routes.filter((x) => x !== r); afterChange(); };
     li.append(s, b); ul.append(li);
   });
-  // años
   const years = [...new Set(routes.map((r) => r.year))].sort((a, b) => b - a);
   $('year').innerHTML = '<option value="all">Todos los años</option>' +
     years.map((y) => `<option value="${y}">${y || 'Fecha desconocida'}</option>`).join('');
   if (sel !== 'all' && !years.includes(+sel)) sel = 'all';
   $('year').value = sel;
-  // intensidad automática según nº de rutas (hasta que la toques)
+  const dates = routes.map((r) => r.date).filter(Boolean).sort();
+  $('dfrom').min = $('dto').min = dates[0] || '';
+  $('dfrom').max = $('dto').max = dates[dates.length - 1] || '';
   if (!intTouched) $('int').value = Math.round(Math.min(50, Math.max(8, 60 - 8 * Math.log2(Math.max(1, routes.length)))));
-  stats(); dirty = true;
+  refresh();
 }
+
+// ---------- sesión ----------
+$('save-session').onclick = async () => {
+  if (!routes.length) { say('No hay rutas que guardar.'); return; }
+  say('Preparando sesión…');
+  try {
+    const blob = await saveSession(routes);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'gpx-heatmap.gpxheat'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    say(`Sesión guardada (${(blob.size / 1048576).toFixed(1)} MB).`);
+  } catch (e) { say('No se pudo guardar la sesión: ' + e.message); }
+};
 
 // ---------- exportar PNG ----------
 function composite(withMap) {
@@ -272,7 +355,7 @@ function download(canvas) {
   });
 }
 $('png').onclick = async () => {
-  heat.render(visible(), view(), { intensity: +$('int').value, width: +$('wid').value, crop: cropD() });
+  heat.render(visible(), view(), heatOpts());
   if (useMap) tiles.draw(view(), true);
   const withMap = useMap && $('pngmap').checked && !!tiles.style.url;
   try { await download(composite(withMap)); }

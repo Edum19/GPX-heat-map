@@ -38,7 +38,21 @@
         <button id="clear" type="button">Quitar todos</button>
       </details>
 
-      <label>Año<select id="year"></select></label>
+      <details open>
+        <summary>Filtros</summary>
+        <label>Año<select id="year"></select></label>
+        <div class="two">
+          <label>Desde<input type="date" id="dfrom"></label>
+          <label>Hasta<input type="date" id="dto"></label>
+        </div>
+        <button id="dclear" type="button">Quitar fechas</button>
+      </details>
+      <label>Colorear por
+        <select id="mode">
+          <option value="density">Densidad (calor)</option>
+          <option value="speed">Velocidad</option>
+        </select>
+      </label>
       <label>Intensidad<input type="range" id="int" min="1" max="100" value="30"></label>
       <label>Grosor de línea<input type="range" id="wid" min="1" max="8" step="0.5" value="2"></label>
 
@@ -53,6 +67,12 @@
 
       <div class="row"><input type="checkbox" id="pngmap" checked><span>Incluir mapa en el PNG</span></div>
       <div class="row">
+        <button id="stats-btn" type="button">Estadísticas</button>
+        <button id="save-session" type="button">Guardar sesión</button>
+        <button id="load-session" type="button">Cargar sesión</button>
+      </div>
+      <small>La sesión guarda tus rutas ya procesadas en un archivo en tu equipo para abrirlas más rápido otro día.</small>
+      <div class="row">
         <button id="reset" type="button">Ajustar vista</button>
         <button id="png" type="button">Guardar PNG</button>
       </div>
@@ -60,9 +80,26 @@
     </div>
   </div>
 
+  <div id="sp" hidden>
+    <div class="sp-head">
+      <strong>Estadísticas</strong>
+      <select id="sp-group">
+        <option value="year">por año</option>
+        <option value="month" selected>por mes</option>
+        <option value="dow">por día</option>
+      </select>
+      <button id="sp-close" type="button" title="Cerrar">×</button>
+    </div>
+    <div id="sp-body"></div>
+  </div>
+  <div id="legend" hidden>
+    <div id="lg-bar"></div>
+    <div class="lg-labels"><span id="lg-lo"></span><span id="lg-hi"></span></div>
+  </div>
   <div id="attr"></div>
   <input id="f-files" type="file" accept=".gpx,application/gpx+xml" multiple hidden>
   <input id="f-dir" type="file" webkitdirectory multiple hidden>
+  <input id="f-session" type="file" accept=".gpxheat" hidden>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
