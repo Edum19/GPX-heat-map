@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0d12">
   <title>GPX Heat Map</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -23,10 +24,18 @@
   </div>
 
   <div id="panel">
-    <span id="toggle" title="Mostrar/ocultar">&#9776;</span>
-    <h1>GPX Heat Map</h1>
+    <div class="hdr">
+      <h1>GPX Heat Map</h1>
+      <button id="stats-btn" type="button">Estadísticas</button>
+      <button id="toggle" type="button" aria-label="Mostrar u ocultar el menú">&#9776;</button>
+    </div>
     <div id="stats">Sin rutas cargadas</div>
     <div id="msg"></div>
+    <div id="legend" hidden>
+      <div id="lg-bar"></div>
+      <div class="lg-labels"><span id="lg-lo"></span><span id="lg-hi"></span></div>
+    </div>
+
     <div id="body">
       <div class="row">
         <button id="add" type="button">Añadir GPX</button>
@@ -47,6 +56,7 @@
         </div>
         <button id="dclear" type="button">Quitar fechas</button>
       </details>
+
       <label>Colorear por
         <select id="mode">
           <option value="density">Densidad (calor)</option>
@@ -66,12 +76,13 @@
       <small id="mapnote">Con el mapa activado, tu navegador descarga teselas del proveedor elegido (que ve las zonas que miras). Tus rutas nunca salen de la página.</small>
 
       <div class="row"><input type="checkbox" id="pngmap" checked><span>Incluir mapa en el PNG</span></div>
+
       <div class="row">
-        <button id="stats-btn" type="button">Estadísticas</button>
         <button id="save-session" type="button">Guardar sesión</button>
         <button id="load-session" type="button">Cargar sesión</button>
       </div>
       <small>La sesión guarda tus rutas ya procesadas en un archivo en tu equipo para abrirlas más rápido otro día.</small>
+
       <div class="row">
         <button id="reset" type="button">Ajustar vista</button>
         <button id="png" type="button">Guardar PNG</button>
@@ -83,19 +94,16 @@
   <div id="sp" hidden>
     <div class="sp-head">
       <strong>Estadísticas</strong>
-      <select id="sp-group">
+      <select id="sp-group" aria-label="Agrupar por">
         <option value="year">por año</option>
         <option value="month" selected>por mes</option>
         <option value="dow">por día</option>
       </select>
-      <button id="sp-close" type="button" title="Cerrar">×</button>
+      <button id="sp-close" type="button" aria-label="Cerrar estadísticas">×</button>
     </div>
     <div id="sp-body"></div>
   </div>
-  <div id="legend" hidden>
-    <div id="lg-bar"></div>
-    <div class="lg-labels"><span id="lg-lo"></span><span id="lg-hi"></span></div>
-  </div>
+
   <div id="attr"></div>
   <input id="f-files" type="file" accept=".gpx,application/gpx+xml" multiple hidden>
   <input id="f-dir" type="file" webkitdirectory multiple hidden>
