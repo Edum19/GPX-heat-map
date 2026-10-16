@@ -4,47 +4,65 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GPX Heat Map</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <aside id="panel">
-    <h1>GPX Heat Map</h1>
-    <p class="hint">Tus archivos se procesan en tu navegador. No se suben a ningún servidor.</p>
+  <canvas id="tiles"></canvas>
+  <canvas id="heat"></canvas>
 
-    <label id="drop" for="file-input">
-      <strong>Arrastra tus GPX aquí</strong>
-      <span>o pulsa para seleccionarlos</span>
-      <input id="file-input" type="file" accept=".gpx,application/gpx+xml" multiple hidden>
-    </label>
-
-    <div id="stats"></div>
-    <ul id="file-list"></ul>
-
-    <details open>
-      <summary>Mapa de calor</summary>
-      <label>Radio <output id="o-radius"></output><input id="radius" type="range" min="1" max="30" value="6"></label>
-      <label>Difuminado <output id="o-blur"></output><input id="blur" type="range" min="1" max="30" value="8"></label>
-      <label>Intensidad <output id="o-max"></output><input id="max" type="range" min="1" max="100" value="30"></label>
-      <label>Opacidad <output id="o-opacity"></output><input id="opacity" type="range" min="10" max="100" value="85"></label>
-      <label>Densificar cada (m) <output id="o-step"></output><input id="step" type="range" min="2" max="100" value="15"></label>
-    </details>
-
-    <details open>
-      <summary>Mapa base</summary>
-      <select id="basemap"></select>
-      <label class="check"><input id="show-tracks" type="checkbox"> Mostrar trazas</label>
-    </details>
-
-    <div class="row">
-      <button id="fit" type="button">Ajustar vista</button>
-      <button id="clear" type="button">Limpiar todo</button>
+  <div id="empty">
+    <div class="card">
+      <h2>GPX Heat Map</h2>
+      <p>Arrastra aquí tus archivos GPX (o una carpeta entera).</p>
+      <p>
+        <button id="pick" type="button">Elegir archivos</button>
+        <button id="pickdir" type="button">Elegir carpeta</button>
+      </p>
+      <small>Todo se procesa en tu navegador. Tus GPX no se suben a ningún servidor.</small>
     </div>
-  </aside>
-  <main id="map"></main>
+  </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <div id="panel">
+    <span id="toggle" title="Mostrar/ocultar">&#9776;</span>
+    <h1>GPX Heat Map</h1>
+    <div id="stats">Sin rutas cargadas</div>
+    <div id="msg"></div>
+    <div id="body">
+      <div class="row">
+        <button id="add" type="button">Añadir GPX</button>
+        <button id="adddir" type="button">Añadir carpeta</button>
+      </div>
+      <details id="files-box">
+        <summary>Archivos (<span id="nfiles">0</span>)</summary>
+        <ul id="file-list"></ul>
+        <button id="clear" type="button">Quitar todos</button>
+      </details>
+
+      <label>Año<select id="year"></select></label>
+      <label>Intensidad<input type="range" id="int" min="1" max="100" value="30"></label>
+      <label>Grosor de línea<input type="range" id="wid" min="1" max="8" step="0.5" value="2"></label>
+
+      <div class="row"><input type="checkbox" id="crop"><span>Recortar inicio/fin de las rutas</span></div>
+      <input type="range" id="cropd" min="100" max="2000" step="50" value="300" disabled>
+      <small id="cropv">Oculta los primeros/últimos 300 m de cada ruta (casa, destinos).</small>
+
+      <div class="row"><input type="checkbox" id="map" checked><span>Mapa de fondo</span></div>
+      <label>Estilo de mapa<select id="style"></select></label>
+      <input type="text" id="customurl" placeholder="https://…/{z}/{x}/{y}.png" hidden>
+      <small id="mapnote">Con el mapa activado, tu navegador descarga teselas del proveedor elegido (que ve las zonas que miras). Tus rutas nunca salen de la página.</small>
+
+      <div class="row"><input type="checkbox" id="pngmap" checked><span>Incluir mapa en el PNG</span></div>
+      <div class="row">
+        <button id="reset" type="button">Ajustar vista</button>
+        <button id="png" type="button">Guardar PNG</button>
+      </div>
+      <small>El PNG es lo que ves, sin el panel. Marca "Recortar" antes de compartirlo.</small>
+    </div>
+  </div>
+
+  <div id="attr"></div>
+  <input id="f-files" type="file" accept=".gpx,application/gpx+xml" multiple hidden>
+  <input id="f-dir" type="file" webkitdirectory multiple hidden>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

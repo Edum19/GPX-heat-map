@@ -1,32 +1,35 @@
-const R = 6371000;
-const rad = (d) => (d * Math.PI) / 180;
+// Utilidades geográficas. Mercator normalizado: x e y en [0, 1].
+export const mx = (lon) => (lon + 180) / 360;
+export const my = (lat) => {
+  const s = Math.sin((lat * Math.PI) / 180);
+  return 0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI);
+};
 
-export function haversine(a, b) {
-  const dLat = rad(b[0] - a[0]);
-  const dLon = rad(b[1] - a[1]);
-  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(h));
+// Distancia haversine en km.
+export function hav(lat1, lon1, lat2, lon2) {
+  const p = Math.PI / 180;
+  const x = Math.sin(((lat2 - lat1) * p) / 2);
+  const y = Math.sin(((lon2 - lon1) * p) / 2);
+  return 12742 * Math.asin(Math.sqrt(x * x + Math.cos(lat1 * p) * Math.cos(lat2 * p) * y * y));
 }
 
-// Inserta puntos intermedios para que no haya huecos entre muestras GPS
-// y la intensidad dependa de la distancia recorrida, no de la frecuencia de muestreo.
-export function densify(segment, stepM) {
-  const out = [segment[0]];
-  for (let i = 1; i < segment.length; i++) {
-    const a = segment[i - 1], b = segment[i];
-    const d = haversine(a, b);
-    const n = Math.floor(d / stepM);
-    for (let k = 1; k <= n; k++) {
-      const t = k / (n + 1);
-      out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
-    }
-    out.push(b);
+// Distancia aproximada en metros (rápida, suficiente para filtrar puntos).
+export function distM(a, b) {
+  const k = Math.cos((((a[0] + b[0]) / 2) * Math.PI) / 180);
+  return Math.hypot((b[1] - a[1]) * k * 111320, (b[0] - a[0]) * 110540);
+}
+
+// Descarta puntos a menos de `step` metros del anterior (conserva primero y último).
+export function thin(seg, step) {
+  const out = [seg[0]];
+  for (let i = 1; i < seg.length - 1; i++) {
+    if (distM(out[out.length - 1], seg[i]) >= step) out.push(seg[i]);
   }
+  out.push(seg[seg.length - 1]);
   return out;
 }
 
-export function segmentLength(segment) {
-  let d = 0;
-  for (let i = 1; i < segment.length; i++) d += haversine(segment[i - 1], segment[i]);
-  return d;
+export function percentile(vals, q) {
+  const v = Float64Array.from(vals).sort();
+  return v[Math.min(v.length - 1, Math.max(0, Math.floor(q * (v.length - 1))))];
 }
