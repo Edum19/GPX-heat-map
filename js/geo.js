@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 // Utilidades geográficas. Mercator normalizado: x e y en [0, 1].
 export const mx = (lon) => (lon + 180) / 360;
 export const my = (lat) => {

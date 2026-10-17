@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 import { PALETTES, buildLUT, speedColor } from './colormap.js';
 
 const NB = 16; // niveles de color en modo velocidad

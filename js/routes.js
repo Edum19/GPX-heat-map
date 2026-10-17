@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 import { hav, mx, my, thin } from './geo.js';
 
 export const MIN_STEP_M = 4;     // descarta puntos a menos de N metros

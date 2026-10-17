@@ -36,3 +36,14 @@ Vercel, framework "Other", sin build command ni output directory.
 ## Nota sobre OpenStreetMap
 OSM exige cabecera `Referer` en las peticiones de teselas. Por eso `vercel.json` usa
 `Referrer-Policy: strict-origin-when-cross-origin` (solo se envía el dominio). Es para uso ligero.
+
+## Licencia
+Copyright (C) 2026 Edum19.
+
+Este proyecto es software libre: puedes redistribuirlo y modificarlo bajo los términos de la
+**GNU General Public License v3.0** (o, a tu elección, cualquier versión posterior) publicada por la
+Free Software Foundation. Se distribuye sin ninguna garantía. Consulta el archivo [`LICENSE`](LICENSE)
+o <https://www.gnu.org/licenses/gpl-3.0.html>.
+
+Los mapas de fondo y las tipografías son de terceros y mantienen sus propias licencias y atribuciones
+(OpenStreetMap, Esri, Google Fonts bajo SIL OFL).

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 // Guardar/cargar sesión: rutas ya procesadas en un único archivo compacto (.gpxheat).
 // Formato: JSON con coordenadas en enteros delta (1e-5° ≈ 1 m), comprimido con gzip si el navegador puede.
 // El archivo se guarda en TU equipo; nada se sube a ningún sitio.

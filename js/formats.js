@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 // Lectores de GPX, TCX, KML y FIT. Todos devuelven { segs: [[[lat, lon, t], ...], ...], date: 'AAAA-MM-DD' | '' }
 // donde t son segundos epoch o NaN. Todo ocurre en el navegador.
 import { parseGPX } from './gpx.js';

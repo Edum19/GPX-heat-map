@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 // Lee un GPX (solo en el navegador).
 // Devuelve segmentos [[lat, lon, t], ...] (t = segundos epoch o NaN) y la fecha 'AAAA-MM-DD' ('' si no hay).
 export function parseGPX(text, fileName = 'archivo.gpx') {

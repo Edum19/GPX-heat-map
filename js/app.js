@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 import { parseTrackFile, extOf, TRACK_EXTS, SESSION_EXT } from './formats.js';
 import { buildRoute } from './routes.js';
 import { HeatLayer } from './heat.js';

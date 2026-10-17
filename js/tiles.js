@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 // Estilos de mapa de fondo. Para añadir uno nuevo, añade una entrada aquí.
 // No uses claves/API privadas: este código es público en el navegador.
 const INV = 'invert(1) hue-rotate(180deg) brightness(.82) contrast(.92)';

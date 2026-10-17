@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE.
 // Paletas. Cada una es una lista de paradas [posición 0-1, [r, g, b]].
 // Sirven tanto para densidad (calor) como para velocidad.
 export const PALETTES = {
