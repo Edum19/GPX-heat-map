@@ -1,38 +1,37 @@
-// Degradado de densidad tipo "inferno". El valor acumulado (0-255) se convierte en color RGBA.
-const STOPS = [
-  [0, [0, 0, 4]], [0.14, [40, 11, 84]], [0.28, [101, 21, 110]], [0.42, [159, 42, 99]],
-  [0.57, [212, 72, 66]], [0.71, [245, 125, 21]], [0.86, [250, 193, 39]], [1, [252, 255, 164]],
-];
+// Paletas. Cada una es una lista de paradas [posición 0-1, [r, g, b]].
+// Sirven tanto para densidad (calor) como para velocidad.
+export const PALETTES = {
+  lima: { label: 'Lima', stops: [[0, [70, 90, 26]], [0.3, [131, 157, 50]], [0.65, [198, 241, 53]], [1, [240, 241, 235]]] },
+  fuego: { label: 'Fuego', stops: [[0, [110, 24, 10]], [0.3, [200, 60, 14]], [0.6, [250, 140, 25]], [0.85, [255, 205, 70]], [1, [255, 244, 200]]] },
+  inferno: { label: 'Inferno', stops: [
+    [0, [0, 0, 4]], [0.14, [40, 11, 84]], [0.28, [101, 21, 110]], [0.42, [159, 42, 99]],
+    [0.57, [212, 72, 66]], [0.71, [245, 125, 21]], [0.86, [250, 193, 39]], [1, [252, 255, 164]]] },
+  mono: { label: 'Monocromo', stops: [[0, [90, 95, 92]], [0.5, [190, 196, 190]], [1, [255, 255, 255]]] },
+};
 
-export function buildLUT() {
+export function colorAt(stops, t) {
+  t = Math.max(0, Math.min(1, t));
+  for (let k = 1; k < stops.length; k++) {
+    if (t <= stops[k][0]) {
+      const a = stops[k - 1], b = stops[k], f = (t - a[0]) / (b[0] - a[0] || 1);
+      return [0, 1, 2].map((j) => Math.round(a[1][j] + (b[1][j] - a[1][j]) * f));
+    }
+  }
+  return stops[stops.length - 1][1];
+}
+
+// Tabla de 256 colores para el modo densidad (valor acumulado -> RGBA).
+export function buildLUT(stops) {
   const lut = new Uint32Array(256);
   for (let v = 0; v < 256; v++) {
     const t = Math.pow(v / 255, 0.6);
-    let c = STOPS[STOPS.length - 1][1];
-    for (let k = 1; k < STOPS.length; k++) {
-      if (t <= STOPS[k][0]) {
-        const a = STOPS[k - 1], b = STOPS[k], f = (t - a[0]) / (b[0] - a[0]);
-        c = [0, 1, 2].map((j) => a[1][j] + (b[1][j] - a[1][j]) * f);
-        break;
-      }
-    }
+    const c = colorAt(stops, t);
     const al = v === 0 ? 0 : Math.round(255 * Math.min(1, t * 2.5));
-    lut[v] = ((al << 24) | (Math.round(c[2]) << 16) | (Math.round(c[1]) << 8) | Math.round(c[0])) >>> 0;
+    lut[v] = ((al << 24) | (c[2] << 16) | (c[1] << 8) | c[0]) >>> 0;
   }
   return lut;
 }
 
-// Rampa de velocidad: lento (azul) -> rápido (rojo). t en [0, 1].
-const SPEED_STOPS = [
-  [0, [40, 70, 255]], [0.25, [0, 200, 255]], [0.5, [60, 230, 90]], [0.75, [255, 220, 40]], [1, [255, 50, 40]],
-];
-export function speedColor(t) {
-  t = Math.max(0, Math.min(1, t));
-  for (let k = 1; k < SPEED_STOPS.length; k++) {
-    if (t <= SPEED_STOPS[k][0]) {
-      const a = SPEED_STOPS[k - 1], b = SPEED_STOPS[k], f = (t - a[0]) / (b[0] - a[0]);
-      return [0, 1, 2].map((j) => Math.round(a[1][j] + (b[1][j] - a[1][j]) * f));
-    }
-  }
-  return SPEED_STOPS[SPEED_STOPS.length - 1][1];
-}
+// En velocidad se evita el extremo oscuro para que los tramos lentos se vean sobre el mapa.
+const SPEED_MIN = 0.3;
+export const speedColor = (stops, t) => colorAt(stops, SPEED_MIN + (1 - SPEED_MIN) * Math.max(0, Math.min(1, t)));
