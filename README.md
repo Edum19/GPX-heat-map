@@ -7,7 +7,7 @@ no permite conexiones salientes de la página; solo carga teselas de mapa (imág
 ## Funciones
 - Cargar archivos o carpetas completas (arrastrar o botones). Formatos: GPX, TCX, FIT, KML.
 - Filtros por año y rango de fechas (del nombre `AAAA-MM-DD…` o de las marcas de tiempo del archivo)
-- Colorear por densidad (calor) o por velocidad (si hay marcas de tiempo), con paletas Lima, Fuego, Inferno y Monocromo
+- Colorear por densidad (calor) o por velocidad (si hay marcas de tiempo), con paletas Oro, Fuego, Inferno y Monocromo
 - Seleccionar una ruta de la lista: se resalta y se centra el mapa
 - Estadísticas: km por año, mes o día, tiempo y velocidad media, rutas más largas, zonas más repetidas
 - Recorte de inicio y final de cada ruta (privacidad)
@@ -17,7 +17,7 @@ no permite conexiones salientes de la página; solo carga teselas de mapa (imág
 
 ## Estilo visual: Motorsport Technical
 Paleta, tipografía y reglas de componentes en `css/style.css` (variables en `:root`).
-Fondo `#101211`, lima `#C6F135` solo para acciones prioritarias, selección y datos destacados.
+Fondo `#0B0D10`, oro `#E9B700` solo para acciones prioritarias, selección y datos destacados.
 Tipografías: Inter (interfaz), Barlow Condensed (cifras y etiquetas), JetBrains Mono (datos técnicos), cargadas desde
 Google Fonts con alternativas del sistema. Para alojarlas tú mismo, descarga los `.woff2`, añade `@font-face` en
 `css/style.css` y quita `fonts.googleapis.com` / `fonts.gstatic.com` de la CSP en `vercel.json`.

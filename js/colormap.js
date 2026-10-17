@@ -3,7 +3,7 @@
 // Paletas. Cada una es una lista de paradas [posición 0-1, [r, g, b]].
 // Sirven tanto para densidad (calor) como para velocidad.
 export const PALETTES = {
-  lima: { label: 'Lima', stops: [[0, [70, 90, 26]], [0.3, [131, 157, 50]], [0.65, [198, 241, 53]], [1, [240, 241, 235]]] },
+  oro: { label: 'Oro', stops: [[0, [70, 52, 6]], [0.3, [150, 112, 0]], [0.65, [233, 183, 0]], [1, [255, 246, 205]]] },
   fuego: { label: 'Fuego', stops: [[0, [110, 24, 10]], [0.3, [200, 60, 14]], [0.6, [250, 140, 25]], [0.85, [255, 205, 70]], [1, [255, 244, 200]]] },
   inferno: { label: 'Inferno', stops: [
     [0, [0, 0, 4]], [0.14, [40, 11, 84]], [0.28, [101, 21, 110]], [0.42, [159, 42, 99]],

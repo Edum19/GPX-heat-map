@@ -18,7 +18,7 @@ const isMobile = () => window.matchMedia('(max-width:760px)').matches;
 const area = $('map-area');
 let W = 1, H = 1, dpr = 1, cx = 0.5, cy = 0.5, zoom = 2;
 let dirty = true, tdirty = true, useMap = true, sel = 'all', intTouched = false;
-let mode = 'density', palette = 'lima', domain = [0, 40];
+let mode = 'density', palette = 'oro', domain = [0, 40];
 let routes = [], selected = null;
 
 const heat = new HeatLayer($('heat'));
@@ -382,6 +382,7 @@ function afterChange() {
   $('nfiles').textContent = routes.length;
   const ul = $('file-list');
   ul.replaceChildren();
+  $('map-empty').hidden = routes.length > 0;
   routes.slice(0, 300).forEach((r) => {
     const li = document.createElement('li');
     const b = document.createElement('button');
@@ -400,6 +401,11 @@ function afterChange() {
     rm.onclick = () => { routes = routes.filter((x) => x !== r); afterChange(); };
     li.append(b, rm); ul.append(li);
   });
+  if (routes.length > 300) {
+    const li = document.createElement('li'); li.className = 'more';
+    li.textContent = `…y ${routes.length - 300} más. Todas se usan en el mapa y las estadísticas.`;
+    ul.append(li);
+  }
   const years = [...new Set(routes.map((r) => r.year))].sort((a, b) => b - a);
   $('year').innerHTML = '<option value="all">Todos los años</option>' +
     years.map((y) => `<option value="${y}">${y || 'Fecha desconocida'}</option>`).join('');
@@ -430,7 +436,7 @@ function composite(withMap) {
   const o = document.createElement('canvas');
   o.width = hc.width; o.height = hc.height;
   const c = o.getContext('2d');
-  c.fillStyle = '#101211'; c.fillRect(0, 0, o.width, o.height);
+  c.fillStyle = '#0B0D10'; c.fillRect(0, 0, o.width, o.height);
   const st = tiles.style;
   if (withMap) {
     if ('filter' in c) c.filter = st.filter || 'none';
@@ -442,8 +448,8 @@ function composite(withMap) {
     const fs = Math.round(11 * dpr);
     c.font = `${fs}px system-ui,Segoe UI,sans-serif`;
     const w = c.measureText(st.attr).width + 10 * dpr, h = fs + 8 * dpr;
-    c.fillStyle = 'rgba(24,28,26,.92)'; c.fillRect(o.width - w, o.height - h, w, h);
-    c.fillStyle = '#A0AAA2'; c.fillText(st.attr, o.width - w + 5 * dpr, o.height - 6 * dpr);
+    c.fillStyle = 'rgba(19,22,26,.92)'; c.fillRect(o.width - w, o.height - h, w, h);
+    c.fillStyle = '#AEB3B9'; c.fillText(st.attr, o.width - w + 5 * dpr, o.height - 6 * dpr);
   }
   return o;
 }

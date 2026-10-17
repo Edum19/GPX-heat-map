@@ -3,7 +3,7 @@
 import { PALETTES, buildLUT, speedColor } from './colormap.js';
 
 const NB = 16; // niveles de color en modo velocidad
-const LIME = '#C6F135', BG = '#101211';
+const GOLD = '#E9B700', BG = '#0B0D10';
 
 export class HeatLayer {
   constructor(canvas) {
@@ -11,14 +11,14 @@ export class HeatLayer {
     this.ctx = canvas.getContext('2d');
     this.acc = document.createElement('canvas');
     this.actx = this.acc.getContext('2d', { willReadFrequently: true });
-    this.setPalette('lima');
+    this.setPalette('oro');
   }
 
   setPalette(id) {
-    const stops = (PALETTES[id] || PALETTES.lima).stops;
+    const stops = (PALETTES[id] || PALETTES.oro).stops;
     this.lut = buildLUT(stops);
     this.binColors = Array.from({ length: NB }, (_, b) => `rgb(${speedColor(stops, (b + 0.5) / NB).join(',')})`);
-    this.binColors.push('#727C74'); // sin datos de tiempo
+    this.binColors.push('#8B9097'); // sin datos de tiempo
   }
 
   resize(w, h) {
@@ -116,7 +116,7 @@ export class HeatLayer {
     c.globalAlpha = 1;
   }
 
-  // Ruta seleccionada: trazo lima con halo oscuro. Inicio = círculo, final = cuadrado (no depende solo del color).
+  // Ruta seleccionada: trazo oro con halo oscuro. Inicio = círculo, final = cuadrado (no depende solo del color).
   drawHighlight(r, v, o) {
     const { W, H, dpr, cx, cy, zoom } = v;
     const sc = 256 * Math.pow(2, zoom), ox = W / 2 - cx * sc, oy = H / 2 - cy * sc;
@@ -141,14 +141,14 @@ export class HeatLayer {
         last = [x, y]; lx = x; ly = y;
       }
     }
-    c.strokeStyle = 'rgba(16,18,17,.9)'; c.lineWidth = o.width + 5; c.stroke(path);
-    c.strokeStyle = LIME; c.lineWidth = o.width + 1.5; c.stroke(path);
+    c.strokeStyle = 'rgba(11,13,16,.9)'; c.lineWidth = o.width + 5; c.stroke(path);
+    c.strokeStyle = GOLD; c.lineWidth = o.width + 1.5; c.stroke(path);
     if (first) { // inicio
       c.beginPath(); c.arc(first[0], first[1], 6, 0, Math.PI * 2);
-      c.fillStyle = BG; c.fill(); c.lineWidth = 2.5; c.strokeStyle = LIME; c.stroke();
+      c.fillStyle = BG; c.fill(); c.lineWidth = 2.5; c.strokeStyle = GOLD; c.stroke();
     }
     if (last) { // final
-      c.fillStyle = LIME; c.strokeStyle = BG; c.lineWidth = 2;
+      c.fillStyle = GOLD; c.strokeStyle = BG; c.lineWidth = 2;
       c.fillRect(last[0] - 5.5, last[1] - 5.5, 11, 11); c.strokeRect(last[0] - 5.5, last[1] - 5.5, 11, 11);
     }
     c.restore();

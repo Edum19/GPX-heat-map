@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later
    Copyright (C) 2026 Edum19. Este programa es software libre: consulta el archivo LICENSE. */
 :root {
-  --bg:#101211; --bg2:#181C1A; --surface:#202522; --elev:#282E2A; --line:#3B433E;
-  --text:#F0F1EB; --text2:#A0AAA2; --text3:#727C74; --lime:#C6F135; --lime-d:#839D32;
-  --warn:#E8B04A; --err:#F08070;
+  --bg:#0B0D10; --bg2:#13161A; --surface:#1B1F25; --elev:#252A31; --line:#2C323A; --ctl:#7A8390;
+  --text:#F1F2F3; --text2:#AEB3B9; --text3:#8B9097; --gold:#E9B700; --gold-d:#B58F00;
+  --warn:#F5A54A; --err:#F08070;
   --ui:Inter,system-ui,"Segoe UI",Roboto,sans-serif;
   --cond:"Barlow Condensed","Roboto Condensed","Arial Narrow","Helvetica Neue",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
@@ -14,7 +14,7 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--text); ove
   font:13px/1.4 var(--ui); -webkit-text-size-adjust:100%; }
 body { display:flex; flex-direction:column; height:100vh; height:100dvh; }
 [hidden] { display:none !important; }
-:focus-visible { outline:2px solid var(--lime); outline-offset:2px; }
+:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
 .mono { font-family:var(--mono); font-size:12px; font-variant-numeric:tabular-nums; }
 
 /* ---------- barra superior ---------- */
@@ -23,25 +23,25 @@ body { display:flex; flex-direction:column; height:100vh; height:100dvh; }
 .brand { display:flex; align-items:baseline; gap:6px; font-family:var(--cond); text-transform:uppercase; white-space:nowrap; }
 .brand b { font-size:24px; font-weight:700; letter-spacing:.02em; }
 .brand span:last-child { font-size:15px; font-weight:500; letter-spacing:.14em; color:var(--text2); }
-.brand .mark { width:10px; height:10px; background:var(--lime); align-self:center; margin-right:2px; }
+.brand .mark { width:10px; height:10px; background:var(--gold); align-self:center; margin-right:2px; }
 .actions { margin-left:auto; display:flex; gap:8px; }
 
 /* ---------- botones y controles ---------- */
 .btn { height:32px; padding:0 12px; font:500 13px var(--ui); color:var(--text); background:var(--surface);
-  border:1px solid var(--line); border-radius:6px; cursor:pointer; white-space:nowrap; }
+  border:1px solid var(--ctl); border-radius:6px; cursor:pointer; white-space:nowrap; }
 .btn:hover { background:var(--elev); border-color:var(--text3); }
-.btn[aria-pressed=true] { border-color:var(--lime); }
-.btn.primary { background:var(--lime); border-color:var(--lime); color:var(--bg); font-weight:600; }
-.btn.primary:hover { background:#d6f95c; border-color:#d6f95c; }
+.btn[aria-pressed=true] { border-color:var(--gold); }
+.btn.primary { background:var(--gold); border-color:var(--gold); color:var(--bg); font-weight:600; }
+.btn.primary:hover { background:#F2C733; border-color:#F2C733; }
 .btn.ghost { background:none; border-color:transparent; color:var(--text2); padding:0 4px; }
 .btn.ghost:hover { color:var(--text); text-decoration:underline; background:none; }
 .btn.icon { width:32px; padding:0; display:inline-flex; align-items:center; justify-content:center; font-size:18px; line-height:1; }
 .btn:disabled { opacity:.45; cursor:default; }
 
 select, input[type=text], input[type=date] { width:100%; height:32px; padding:0 8px; font:13px var(--ui); color:var(--text);
-  background:var(--surface); border:1px solid var(--line); border-radius:6px; color-scheme:dark; }
-input[type=range] { width:100%; accent-color:var(--lime); }
-input[type=checkbox] { accent-color:var(--lime); width:16px; height:16px; margin:0; }
+  background:var(--surface); border:1px solid var(--ctl); border-radius:6px; color-scheme:dark; }
+input[type=range] { width:100%; accent-color:var(--gold); }
+input[type=checkbox] { accent-color:var(--gold); width:16px; height:16px; margin:0; }
 .tag { font:500 10.5px var(--mono); text-transform:uppercase; letter-spacing:.08em; color:var(--text2); }
 
 /* ---------- estructura ---------- */
@@ -70,8 +70,8 @@ body.panel-off #panel { display:none; }
 #msg.warn { border-left-color:var(--warn); } #msg.warn::first-line { color:var(--warn); font-weight:600; }
 progress { display:block; width:100%; height:3px; border:0; appearance:none; background:var(--elev); }
 progress::-webkit-progress-bar { background:var(--elev); }
-progress::-webkit-progress-value { background:var(--lime); }
-progress::-moz-progress-bar { background:var(--lime); }
+progress::-webkit-progress-value { background:var(--gold); }
+progress::-moz-progress-bar { background:var(--gold); }
 
 /* ---------- secciones ---------- */
 .sec { border-bottom:1px solid var(--line); }
@@ -94,7 +94,7 @@ progress::-moz-progress-bar { background:var(--lime); }
 .hint { margin:0; color:var(--text2); font-size:12px; }
 .local { margin:0; padding-top:10px; border-top:1px solid var(--line); color:var(--text2); font-size:12px; }
 .local .tag { display:block; margin-bottom:3px; color:var(--text); }
-.dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--lime-d); margin-right:6px; }
+.dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--gold-d); margin-right:6px; }
 
 /* ---------- lista de archivos y ruta seleccionada ---------- */
 #file-list { list-style:none; margin:0; padding:0; max-height:220px; overflow-y:auto; border-top:1px solid var(--line); }
@@ -103,13 +103,13 @@ progress::-moz-progress-bar { background:var(--lime); }
 .fl { flex:1; min-width:0; display:flex; justify-content:space-between; gap:8px; padding:6px 6px 6px 8px; text-align:left;
   background:none; border:0; border-left:2px solid transparent; color:var(--text); cursor:pointer; font:12px var(--ui); }
 .fl:hover { background:var(--surface); }
-.fl[aria-pressed=true] { background:var(--surface); border-left-color:var(--lime); font-weight:600; }
-.fl[aria-pressed=true] .fn::before { content:"▸ "; color:var(--lime); }
+.fl[aria-pressed=true] { background:var(--surface); border-left-color:var(--gold); font-weight:600; }
+.fl[aria-pressed=true] .fn::before { content:"▸ "; color:var(--gold); }
 .fn { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .fk { font:400 11px var(--mono); color:var(--text2); white-space:nowrap; }
 .x { background:none; border:0; color:var(--text2); font-size:18px; line-height:1; padding:0 8px; cursor:pointer; }
 .x:hover { color:var(--text); }
-#sel { padding:10px 12px; background:var(--surface); border:1px solid var(--lime-d); border-left:3px solid var(--lime); border-radius:4px; }
+#sel { padding:10px 12px; background:var(--surface); border:1px solid var(--gold-d); border-left:3px solid var(--gold); border-radius:4px; }
 .sel-h { display:flex; align-items:center; justify-content:space-between; }
 .sel-name { margin-top:4px; font-weight:600; word-break:break-all; }
 .sel-kv { display:grid; grid-template-columns:auto 1fr; gap:2px 12px; margin:8px 0 0; }
@@ -124,10 +124,10 @@ progress::-moz-progress-bar { background:var(--lime); }
 #map-ctl .btn { background:var(--bg2); width:36px; height:36px; }
 #map-ctl .btn:hover { background:var(--elev); }
 #attr { position:absolute; right:0; bottom:0; max-width:80%; padding:2px 8px; font-size:10.5px; color:var(--text2);
-  background:rgba(24,28,26,.92); display:none; }
+  background:rgba(19,22,26,.92); display:none; }
 body.drag::after { content:"Suelta aquí tus archivos"; position:fixed; inset:0; z-index:50; display:flex; align-items:center;
   justify-content:center; font:600 28px var(--cond); text-transform:uppercase; letter-spacing:.08em;
-  background:rgba(16,18,17,.8); border:2px dashed var(--lime); pointer-events:none; }
+  background:rgba(11,13,16,.8); border:2px dashed var(--gold); pointer-events:none; }
 
 /* ---------- estadísticas (columna derecha en escritorio) ---------- */
 #sp { flex:none; width:360px; overflow-y:auto; overscroll-behavior:contain; background:var(--bg2); border-left:1px solid var(--line); }
@@ -145,18 +145,19 @@ body.drag::after { content:"Suelta aquí tus archivos"; position:fixed; inset:0;
 .bar-row { display:grid; grid-template-columns:64px 1fr 52px; align-items:center; gap:8px; margin:4px 0; font-size:12px; }
 .bar-row .bl { font-family:var(--mono); font-size:11px; color:var(--text2); }
 .bar-wrap { background:var(--surface); height:8px; }
-.bar { background:var(--lime); height:100%; }
+.bar { background:var(--gold); height:100%; }
 .bv { text-align:right; font:400 12px var(--mono); }
 #sp ol.top { margin:0 16px; padding:0; list-style:none; counter-reset:t; }
 #sp ol.top li { counter-increment:t; border-bottom:1px solid var(--surface); }
 #sp button.link { width:100%; display:flex; justify-content:space-between; gap:10px; padding:7px 0; background:none; border:0; color:var(--text); cursor:pointer; text-align:left; font:12.5px var(--ui); }
 #sp button.link::before { content:counter(t); font:400 11px var(--mono); color:var(--text3); width:14px; flex:none; }
-#sp button.link:hover .ln { color:var(--lime); text-decoration:underline; }
+#sp button.link:hover .ln { color:var(--gold); text-decoration:underline; }
 #sp .ln { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #sp .muted { margin:8px 16px 0; color:var(--text2); font-size:12px; }
 
 /* ---------- tablet y móvil ---------- */
 @media (max-width:760px) {
+  .brand > span:last-child { display:none; }
   :root { --top:44px; }
   #toggle, .desk { display:none; }
   #work { flex-direction:column; }
@@ -179,4 +180,12 @@ body.drag::after { content:"Suelta aquí tus archivos"; position:fixed; inset:0;
   #sp button.link { padding:11px 0; font-size:14px; }
   .bar-row { grid-template-columns:72px 1fr 56px; font-size:13px; }
 }
+/* estado vacío del mapa */
+#map-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:24px; pointer-events:none; }
+#map-empty .box { pointer-events:auto; max-width:340px; padding:16px 20px; background:var(--bg2); border:1px solid var(--line); border-radius:8px; text-align:center; color:var(--text2); }
+#map-empty .box p { margin:6px 0 0; }
+#map-empty .box .tag { color:var(--text); }
+#file-list li.more { display:block; padding:6px 8px; color:var(--text2); font-size:12px; border-bottom:0; }
+.ns { padding:24px; color:var(--text2); }
+
 @media (prefers-reduced-motion:reduce) { *, *::before, *::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
