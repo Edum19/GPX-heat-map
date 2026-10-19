@@ -1,0 +1,167 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later · Copyright (C) 2026 Edum19 · ver LICENSE -->
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0B0D10">
+  <title>GPX Heat Map</title>
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="GPX Heat Map" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="description" content="Mapa de calor de tus rutas GPX, TCX, FIT y KML. Todo se procesa en tu navegador.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <noscript><p class="ns">Esta herramienta necesita JavaScript para procesar tus archivos en el navegador.</p></noscript>
+  <header id="top">
+    <button id="toggle" class="btn icon" type="button" aria-expanded="true" aria-controls="panel" aria-label="Mostrar u ocultar el panel">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+    </button>
+    <div class="brand"><span class="mark" aria-hidden="true"></span><b>GPX</b><span>HEAT MAP</span></div>
+    <nav class="actions" aria-label="Acciones principales">
+      <button class="btn primary js-add" type="button">Añadir</button>
+      <button id="stats-btn" class="btn" type="button" aria-pressed="false" aria-controls="sp">Estadísticas</button>
+      <button class="btn js-png desk" type="button">PNG</button>
+    </nav>
+  </header>
+
+  <div id="work">
+    <aside id="panel" aria-label="Panel de control">
+      <div class="p-head">
+        <div class="readout" aria-live="polite">
+          <div class="num"><span class="n" id="r-routes">0</span><span class="l">Rutas</span></div>
+          <div class="num"><span class="n" id="r-km">0</span><span class="l">Km</span></div>
+          <div class="num" id="r-time-box" hidden><span class="n" id="r-time">0</span><span class="l">Horas</span></div>
+        </div>
+        <button id="sheet-toggle" class="btn sheet-toggle" type="button" aria-expanded="false" aria-controls="p-body">Panel</button>
+      </div>
+      <progress id="prog" hidden></progress>
+      <div id="msg" role="status" aria-live="polite"></div>
+
+      <div id="p-body">
+        <details class="sec" open>
+          <summary><span class="no" aria-hidden="true">01</span><span class="ttl">Archivos</span><span class="cnt">(<span id="nfiles">0</span>)</span></summary>
+          <div class="sec-body">
+            <div id="sel" hidden>
+              <div class="sel-h"><span class="tag">Ruta seleccionada</span><button id="sel-clear" class="x" type="button" aria-label="Quitar selección">×</button></div>
+              <div id="sel-name" class="sel-name"></div>
+              <dl id="sel-kv" class="sel-kv"></dl>
+            </div>
+            <div class="row">
+              <button class="btn primary js-add" type="button">Añadir archivos</button>
+              <button id="adddir" class="btn" type="button">Añadir carpeta</button>
+            </div>
+            <p class="hint">GPX, TCX, FIT o KML. También puedes soltarlos en cualquier parte de la ventana.</p>
+            <p class="local"><span class="tag"><span class="dot" aria-hidden="true"></span>Procesado local</span>
+              Todo se procesa en tu navegador. Tus archivos no se suben a ningún servidor.</p>
+            <ul id="file-list"></ul>
+            <button id="clear" class="btn ghost" type="button">Quitar todos</button>
+          </div>
+        </details>
+
+        <details class="sec" open>
+          <summary><span class="no" aria-hidden="true">02</span><span class="ttl">Filtros</span></summary>
+          <div class="sec-body">
+            <label class="f">Año<select id="year"></select></label>
+            <div class="two">
+              <label class="f">Desde<input type="date" id="dfrom"></label>
+              <label class="f">Hasta<input type="date" id="dto"></label>
+            </div>
+            <button id="dclear" class="btn ghost" type="button">Quitar fechas</button>
+          </div>
+        </details>
+
+        <details class="sec" open>
+          <summary><span class="no" aria-hidden="true">03</span><span class="ttl">Visualización</span></summary>
+          <div class="sec-body">
+            <label class="f">Colorear por
+              <select id="mode">
+                <option value="density">Densidad (calor)</option>
+                <option value="speed">Velocidad</option>
+              </select>
+            </label>
+            <label class="f">Paleta<select id="palette"></select></label>
+            <label class="f r">Intensidad <output id="o-int" class="mono"></output><input type="range" id="int" min="1" max="100" value="30"></label>
+            <label class="f r">Grosor de línea <output id="o-wid" class="mono"></output><input type="range" id="wid" min="1" max="8" step="0.5" value="2"></label>
+            <label class="chk"><input type="checkbox" id="crop"><span>Recortar inicio y final de cada ruta</span></label>
+            <label class="f r">Distancia recortada <output id="o-cropd" class="mono"></output><input type="range" id="cropd" min="100" max="2000" step="50" value="300" disabled></label>
+            <p class="hint" id="cropv">Oculta el inicio y el final de cada ruta (casa, destinos).</p>
+          </div>
+        </details>
+
+        <details class="sec">
+          <summary><span class="no" aria-hidden="true">04</span><span class="ttl">Mapa</span></summary>
+          <div class="sec-body">
+            <label class="chk"><input type="checkbox" id="usemap" checked><span>Mostrar mapa de fondo</span></label>
+            <label class="f">Estilo<select id="style"></select></label>
+            <input type="text" id="customurl" placeholder="https://…/{z}/{x}/{y}.png" aria-label="URL de teselas personalizada" hidden>
+            <p class="hint">Con el mapa activado, tu navegador descarga teselas del proveedor elegido, que ve las zonas que miras. Tus rutas nunca salen de la página.</p>
+          </div>
+        </details>
+
+        <details class="sec">
+          <summary><span class="no" aria-hidden="true">05</span><span class="ttl">Exportar y sesión</span></summary>
+          <div class="sec-body">
+            <label class="chk"><input type="checkbox" id="pngmap" checked><span>Incluir mapa en el PNG</span></label>
+            <div class="row">
+              <button class="btn js-png" type="button">Guardar PNG</button>
+            </div>
+            <p class="hint">El PNG es lo que ves en el mapa. Activa el recorte antes de compartirlo.</p>
+            <div class="row">
+              <button id="save-session" class="btn" type="button">Guardar sesión</button>
+              <button id="load-session" class="btn" type="button">Cargar sesión</button>
+            </div>
+            <p class="hint">La sesión guarda tus rutas ya procesadas en un archivo en tu equipo para abrirlas más rápido otro día.</p>
+          </div>
+        </details>
+      </div>
+    </aside>
+
+    <main id="map-area">
+      <canvas id="tiles" aria-hidden="true"></canvas>
+      <div id="map-empty" hidden><div class="box"><p class="tag">Sin rutas cargadas</p><p>Añade archivos GPX, TCX, FIT o KML desde el panel, o arrástralos a esta ventana.</p></div></div>
+      <canvas id="heat" tabindex="0" role="application" aria-label="Mapa de calor de rutas. Flechas para mover, más y menos para el zoom, cero para ajustar la vista."></canvas>
+
+      <div id="legend" hidden>
+        <div id="lg-title" class="tag"></div>
+        <div id="lg-bar"></div>
+        <div class="lg-labels mono"><span id="lg-lo"></span><span id="lg-hi"></span></div>
+      </div>
+
+      <div id="map-ctl">
+        <button id="zin" class="btn icon" type="button" aria-label="Acercar">+</button>
+        <button id="zout" class="btn icon" type="button" aria-label="Alejar">&minus;</button>
+        <button id="reset" class="btn icon" type="button" aria-label="Ajustar la vista a las rutas">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 1v3M8 12v3M1 8h3M12 8h3" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+      </div>
+      <div id="attr"></div>
+    </main>
+
+    <aside id="sp" hidden aria-label="Estadísticas">
+      <div class="sp-head">
+        <strong>Estadísticas</strong>
+        <select id="sp-group" aria-label="Agrupar por">
+          <option value="year">por año</option>
+          <option value="month" selected>por mes</option>
+          <option value="dow">por día</option>
+        </select>
+        <button id="sp-close" class="btn icon" type="button" aria-label="Cerrar estadísticas">×</button>
+      </div>
+      <div id="sp-body"></div>
+    </aside>
+  </div>
+
+  <input id="f-files" type="file" accept=".gpx,.tcx,.fit,.kml,.gpxheat" multiple hidden>
+  <input id="f-dir" type="file" webkitdirectory multiple hidden>
+  <input id="f-session" type="file" accept=".gpxheat" hidden>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
