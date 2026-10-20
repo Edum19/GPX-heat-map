@@ -23,7 +23,7 @@ body { display:flex; flex-direction:column; height:100vh; height:100dvh; }
 .brand { display:flex; align-items:baseline; gap:6px; font-family:var(--cond); text-transform:uppercase; white-space:nowrap; }
 .brand b { font-size:24px; font-weight:700; letter-spacing:.02em; }
 .brand span:last-child { font-size:15px; font-weight:500; letter-spacing:.14em; color:var(--text2); }
-.brand .mark { width:10px; height:10px; background:var(--gold); align-self:center; margin-right:2px; }
+.brand .mark { width:28px; height:28px; display:block; align-self:center; margin-right:4px; flex:none; }
 .actions { margin-left:auto; display:flex; gap:8px; }
 
 /* ---------- botones y controles ---------- */
